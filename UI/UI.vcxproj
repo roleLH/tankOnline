@@ -152,8 +152,11 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CmdWindow.h" />
     <ClInclude Include="Joypad.h" />
+    <ClInclude Include="net.h" />
     <ClInclude Include="Object.h" />
+    <ClInclude Include="StateMachine.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="util.h" />

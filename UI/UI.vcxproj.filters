@@ -35,5 +35,14 @@
     <ClInclude Include="System.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CmdWindow.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="net.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

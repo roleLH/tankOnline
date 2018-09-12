@@ -39,6 +39,19 @@ namespace tank_war
 		inline bool live() { return isLive; }
 		inline void birth() { isLive = true; }
 		inline void die() { isLive = false; }
+		inline int getX() const { return posX; }
+		inline int getY() const { return posY; }
+		inline char getDir() const 
+		{ 
+			switch (dir)
+			{
+				case EDir::DIR_UP: return 0x1e;
+				case EDir::DIR_DOWN: return 0x1f;
+				case EDir::DIR_LEFT: return 0x11;
+				case EDir::DIR_RIGHT: return 0x10;
+			}
+		}
+		inline bool getIsLive() const { return isLive; }
      protected:
         int posX, posY;
         int speed;
@@ -46,6 +59,17 @@ namespace tank_war
 		bool isLive;
     };
 
+	class Bullet : public Object
+	{
+	public:
+		virtual void update();
+
+		Bullet();
+		Bullet(int x, int y, EDir d);
+		void set(int x, int y, EDir d);
+	private:
+		static int bulletMap;
+	};
 
     class Tank : public Object
     {
@@ -59,7 +83,7 @@ namespace tank_war
         void left();
         void right();
         void idle();
-		void fire();
+		Bullet fire();
 
         void clearOld();
         void buildNew();
@@ -71,17 +95,7 @@ namespace tank_war
         
     };
 
-    class Bullet : public Object
-    {
-    public:
-		virtual void update();
 
-		Bullet();
-		Bullet(int x, int y, EDir d);
-		void set(int x, int y, EDir d);
-    private:
-        static int bulletMap;
-    };
 
 	class ObjectManager
 	{
@@ -187,9 +201,6 @@ namespace tank_war
         {
             this->dir = DIR_UP;
         }
-#ifdef DEBUG
-		std::cout << "[" << posX << ", " << posY << "]\n";
-#endif // DEBUG
     }
 
     void Tank::down()
@@ -211,9 +222,6 @@ namespace tank_war
 		{
 			this->dir = DIR_DOWN;
 		}
-#ifdef DEBUG
-		std::cout << "[" << posX << ", " << posY << "]\n";
-#endif // DEBUG
     }
 
     void Tank::left()
@@ -235,9 +243,6 @@ namespace tank_war
 		{
 			this->dir = DIR_LEFT;
 		}
-#ifdef DEBUG
-		std::cout << "[" << posX << ", " << posY << "]\n";
-#endif // DEBUG
     }
 
     void Tank::right()
@@ -259,9 +264,6 @@ namespace tank_war
 		{
 			this->dir = DIR_RIGHT;
 		}
-#ifdef DEBUG
-		std::cout << "[" << posX << ", " << posY << "]\n";
-#endif // DEBUG
     }
 
     void Tank::idle()
@@ -302,11 +304,14 @@ namespace tank_war
     {
         clearOld();
         buildNew();
+
     }
 
-	void Tank::fire()
+	// 注意！！ 这个函数很烂，目的仅仅是为了不把system做成全局变量
+	// 很烂的原因：我不喜欢这种复制。
+	Bullet Tank::fire()
 	{
-
+		return Bullet(this->posX, this->posY, this->dir);
 	}
 
 	Bullet::Bullet()

@@ -21,6 +21,15 @@ namespace tank_war
 
 		int addUser();
 
+		inline Tank& getTank(int userId)
+		{
+			return objManager.getTank(userList[userId].tankId);
+		}
+		inline Joypad& getJoypad(int userId)
+		{
+			return joypadManager.getJoypad(userList[userId].joypadId);
+		}
+
 	private:
 		List<User> userList;
 		ObjectManager objManager;
@@ -69,8 +78,14 @@ namespace tank_war
 					tank.left();
 				else if (joypad.isPress(KEY_RIGHT))
 					tank.right();
-				if (joypad.isPress(KEY_OK))
-					tank.fire();
+				if (joypad.isPress(KEY_OK))	// 这里存在多次复制，可能会有影响
+				{
+					Bullet bullet = tank.fire();
+					int bid = objManager.newBullet();
+					Bullet& tb = objManager.getBullet(bid);
+					tb = bullet;
+				}
+					
 				joypad.reset();
 			}
 		}
