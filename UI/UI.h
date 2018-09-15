@@ -123,7 +123,7 @@ namespace UI
 	void TankInfo::setJoyPad(const char* state)
 	{
 		std::string buf = "";
-		for (size_t i = 6; i >= 0; --i)
+		for (int i = 6; i >= 0; --i)
 			buf += state[i];
 		setInfo(369, buf);
 	}

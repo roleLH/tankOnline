@@ -76,7 +76,6 @@ private:
 	Letters* letters;
 };
 
-static CmdWindow cmdLine;
 
 CmdWindow::CmdWindow(int x, int y, int w, int h)
 {

@@ -50,6 +50,7 @@ namespace UI
 		~CServerListState();
 		void control(const char* joypadState);
 		void update();
+		void enter();
 	private:
 		std::vector<sockaddr_in> serverList;
 		GameUI* gameui;
@@ -109,11 +110,17 @@ namespace UI
 		if (manager)
 			delete manager;
 	}
+	// 选择列表中的服务ip并且尝试连接
 	void CServerListState::control(const char* joypadState)
 	{
-
+		
 	}
 
+	void CServerListState::enter()
+	{
+		manager->tryGetServer();
+	}
+	
 	class CFSM
 	{
 	public:

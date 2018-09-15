@@ -7,9 +7,9 @@ template<typename Type>
 class List
 {
 public:
-	List(int size = 4) 
+	List(int size = 4):
+		list(size)
 	{
-		list.resize(size);
 		for (int i = 0; i < size; ++i)
 			freeList.push(i);
 	}

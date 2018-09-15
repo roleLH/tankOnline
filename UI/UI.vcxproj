@@ -95,7 +95,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>SDL2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;SDL2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -153,10 +153,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CmdWindow.h" />
+    <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="Joypad.h" />
     <ClInclude Include="net.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="StateMachine.h" />
+    <ClInclude Include="static.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="util.h" />
