@@ -152,6 +152,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AStar.h" />
     <ClInclude Include="CmdWindow.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="Joypad.h" />

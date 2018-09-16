@@ -5,7 +5,8 @@
 #include <mutex>
 #include <iostream>
 /**
- * 数据包格式 第一个字节表示几个用户 后面每7个字节 第一个字节表示用户id 后六个表示手柄状态
+ * 数据包格式 第一个字节表示几个用户 后面每8个字节 
+ * 第一个字节表示用户id  第二个字节表示player id 后六个表示手柄状态
  * 
  *  
  */
@@ -24,7 +25,7 @@ namespace net
     #define PORT 6166
     #define SERVER_PORT (PORT + 1)
 	#define CLIENT_PORT (PORT + 2)
-    #define IP "10.251.228.146"
+    #define IP "10.251.224.3"
 	#define INTERVAL_OF_FRAME 30
 	
     enum EUserState
@@ -94,11 +95,10 @@ namespace net
 	void Server::mainLoop()
     {
 		timeval timeout;
-		timeout.tv_sec = 5;
+		timeout.tv_sec = 500;
 		timeout.tv_usec = 0;
 		fd_set rset;
 		FD_ZERO(&rset);
-		cmdLine.text(0, 5, "main loop start :");
         while(!isFinished)
         {
 			sockaddr_in client;
@@ -107,7 +107,7 @@ namespace net
 
 			FD_SET(serverSock, &rset);
 			int  n = select(serverSock + 1, &rset, NULL, NULL, &timeout);
-			if (n <= 0)	// 如果超过1秒没有接收到任何消息，那么就停止。
+			if (n <= 0)	// 如果超过5秒没有接收到任何消息，那么就停止。
 			{
 				isFinished = true;
 				break;
@@ -117,7 +117,8 @@ namespace net
 			{
 				recvfrom(serverSock, buf, 8, 0, (sockaddr*)&client, &size);
 				
-				uint8_t id = static_cast<uint8_t>(buf[0]);
+				uint8_t id = static_cast<uint8_t>(buf[0]);	// 第一个字节标识用户id
+
 
 				// 注意，我们只能在这里记录客户端用于传输的套接字地址信息
 				// 如果该用户还未记录过套接字地址信息，那么就进行记录
@@ -130,7 +131,8 @@ namespace net
 				if (userList[id].state == USER_IDLE)
 				{
 					userList[id].mutexOfBuf.lock();
-					strcpy_s(userList[id].buf, buf);
+					for (int i = 0; i < 8; ++i)
+						userList[id].buf[i] = buf[i];
 					userList[id].mutexOfBuf.unlock();
 				}
 				FD_CLR(serverSock, &rset);
@@ -140,49 +142,52 @@ namespace net
 				isFinished = true;
 				break;
 			}
-
-			for (int i = 0; i < 8; ++i)
-				buf[i] += '0';
-			buf[7] = 0;
-			cmdLine.text(12, 5, buf);
-
-
+			
 		//	userList[id].state = USER_SEND;
         }
-		cmdLine.text(0, 5, "main loop end :");
+		std::cout << "main loop quit ??! \n";
     }
 
     // 这个函数的作用：每隔30ms（每帧）将所有用户的输入打包，然后发送给所有客户端
+	// 关于打包的数据，我们这里忽略掉每个user.buf域的第一个字节，我们只传输后7个字节
     void Server::pack()
     {
         
 		while (!isFinished)
 		{
-			std::string buf;
+			char buf[33] = {0,};
 			steady_clock::time_point start = steady_clock::now();
-			char numOfUser = static_cast<char>(userList.size());
-			buf += (numOfUser);
+			
 			for (size_t i = 0; i < userList.size(); ++i)
 			{
 				if (userList[i].isRegistered)
 				{
+					
 					userList[i].mutexOfBuf.lock();
-					buf += userList[i].buf;
+					for (size_t k = 1; k < 8; ++k)
+					{
+						buf[buf[0] * 7 + k] = userList[i].buf[k];
+					}
 					userList[i].mutexOfBuf.unlock();
+					buf[0]++;
+
 				}
 			}
+
+
+
 			for (size_t i = 0; i < userList.size(); ++i)
 			{
 				if (userList[i].isRegistered)
 				{
-					sendto(serverSock, buf.c_str(), buf.length(), 0, (sockaddr*)&userList[i].serverAddr, sizeof(sockaddr_in));
+					sendto(serverSock, buf, (buf[0] * 8 + 1), 0, (sockaddr*)&userList[i].serverAddr, sizeof(sockaddr_in));
 				}
 			}
 			auto d = steady_clock::now() - start;
 			Sleep(INTERVAL_OF_FRAME - std::chrono::duration_cast<milliseconds>(d).count());
+
 		}
 
-        
     }
 
     Server::Server()
@@ -205,9 +210,7 @@ namespace net
 	// 另外，在此阶段，我们也需要同步所有已连接的用户。
     void Server::link()
     {
-		cmdLine.text(0, 0, "server link:");
-
-
+		
 		SOCKET linkSock = socket(AF_INET, SOCK_DGRAM, 0);
 		sockaddr_in tmpAddr;
 		memset(&tmpAddr, 0, sizeof(tmpAddr));
@@ -221,7 +224,8 @@ namespace net
             sockaddr_in client;
 			int size = sizeof(client);
 			char buf[255] = {};
-            recvfrom(linkSock, buf, 255, 0, (sockaddr*)&client, &size);
+            int n = recvfrom(linkSock, buf, 255, 0, (sockaddr*)&client, &size);
+			if (n < 0) break;	// 如果出现任何接收错误，退出循环
 			std::cout << "server recv: " << inet_ntoa(client.sin_addr) << std::endl;
             std::cout << buf << std::endl;
             
@@ -282,9 +286,9 @@ namespace net
 		int cnt = 4;
 		while (cnt--)
 		{
-			recvfrom(sockOfLink, buff, 5, 0, NULL, NULL);
-			cmdLine.text(0, 20, "C Link:");
-			cmdLine.text(9, 20, buff);
+			int n = recvfrom(sockOfLink, buff, 5, 0, NULL, NULL);
+			if (n < 0)	// 如果出现任何接收错误，那么退出循环
+				break;
 			tank_war::staticSystem.addPlayer(buff[0]);
 		}
 		return 0;
@@ -301,6 +305,8 @@ namespace net
 		inline sockaddr_in* getServerAddr() 
 		{ 
 			sockaddr_in* tmp = NULL;
+			// 这里加锁的原因：我们总是在循环中尝试获取server的信息，
+			// 在另外的线程，试图去写server 信息
 			if (mutexOfServer.try_lock())
 			{
 				tmp = &server;

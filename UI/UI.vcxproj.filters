@@ -50,5 +50,8 @@
     <ClInclude Include="static.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AStar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

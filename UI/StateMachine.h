@@ -100,6 +100,7 @@ namespace UI
 				cmdLine.drawChar(20 + j, 10 + i, bmp[i * 20 + j]);
 	}
 
+
 	CServerListState::CServerListState()
 		: serverList(), gameui(&staticGameUI)
 	{
@@ -111,6 +112,8 @@ namespace UI
 			delete manager;
 	}
 	// 选择列表中的服务ip并且尝试连接
+	// 但是目前我们只有一个服务ip。。。
+	// 所以，没得选。
 	void CServerListState::control(const char* joypadState)
 	{
 		
@@ -159,7 +162,7 @@ namespace UI
 	{
 		for (auto& state : states)
 		{
-			if (!state)
+			if (state)
 				delete state;
 		}
 	}
