@@ -97,7 +97,7 @@ namespace UI
 		char* bmp = gameui->getBmp();
 		for (size_t i = 0; i < 20; ++i)
 			for (size_t j = 0; j < 20; ++j)
-				cmdLine.drawChar(20 + j, 10 + i, bmp[i * 20 + j]);
+				staticWindowHandle().drawChar(20 + j, 10 + i, bmp[i * 20 + j]);
 	}
 
 

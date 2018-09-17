@@ -149,17 +149,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CmdWindow.cpp" />
+    <ClCompile Include="Controller.cpp" />
+    <ClCompile Include="Joypad.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="net.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="System.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AStar.h" />
     <ClInclude Include="CmdWindow.h" />
+    <ClInclude Include="Controller.h" />
     <ClInclude Include="HeartBeat.h" />
     <ClInclude Include="Joypad.h" />
     <ClInclude Include="net.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="StateMachine.h" />
-    <ClInclude Include="static.h" />
     <ClInclude Include="System.h" />
     <ClInclude Include="UI.h" />
     <ClInclude Include="util.h" />

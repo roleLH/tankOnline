@@ -18,6 +18,27 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="net.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Joypad.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdWindow.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="UI.h">
@@ -47,10 +68,10 @@
     <ClInclude Include="HeartBeat.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="static.h">
+    <ClInclude Include="AStar.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AStar.h">
+    <ClInclude Include="Controller.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
