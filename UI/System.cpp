@@ -12,6 +12,8 @@ namespace tank_war
 			playerList[id].tankId = objManager.newTank();
 			playerList[id].joypadId = joypadManager.newJoypad();
 			playerList[id].isLive = true;
+
+			userMap[userId] = id;	
 		}
 		return id;
 	}
@@ -21,11 +23,16 @@ namespace tank_war
 		uint8_t numOfPlayer = data[0];
 		for (uint8_t i = 0; i < numOfPlayer; ++i)
 		{
-			if (playerList[data[i * 7 + 1]].isLive)
+			auto iter = userMap.find(data[i * 8 + 1]);
+			if (iter != userMap.end())
 			{
-				Joypad& joypad = joypadManager.getJoypad(playerList[data[i * 7 + 1]].joypadId);
-				joypad.set(data + i * 7 + 2);
+				if (playerList[iter->second].isLive)
+				{
+					Joypad& joypad = joypadManager.getJoypad(playerList[iter->second].joypadId);
+					joypad.set(data + i * 8 + 3);
+				}
 			}
+			
 		}
 	}
 

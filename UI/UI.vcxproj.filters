@@ -41,37 +41,37 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UI.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Joypad.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="util.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="System.h">
+    <ClInclude Include="AStar.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="CmdWindow.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="StateMachine.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="net.h">
+    <ClInclude Include="Controller.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HeartBeat.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AStar.h">
+    <ClInclude Include="Joypad.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Controller.h">
+    <ClInclude Include="net.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachine.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="System.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

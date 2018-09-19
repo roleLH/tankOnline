@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include "Joypad.h"
 #include "Object.h"
 #include "util.h"
@@ -33,6 +34,11 @@ namespace tank_war
 		}
 
 	private:
+
+		// 我们需要提供一个用户id到playerid的映射
+		// 具体的原因：我们需要同步其他用户的信息，但是我们不能保证所有用户在所有客户端具有相同的playerId。
+		// 但是可以保证的是，所有用户具有一个相同的userId，所以我们用userId去映射playerId
+		std::unordered_map<int, int>userMap;	
 		List<Player> playerList;
 		ObjectManager objManager;
 		JoypadManager joypadManager;

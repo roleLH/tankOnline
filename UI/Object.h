@@ -20,11 +20,26 @@ namespace tank_war
     #define MAP_WIDTH 20
     #define MAP_HEIGHT 40
 
-    
-    static int map[MAP_WIDTH][MAP_HEIGHT];
-	void resetMap();
+	struct SMap
+	{
+		int map[MAP_WIDTH][MAP_HEIGHT];
+	};
 
+	class Map
+	{
+	public:
+		Map();
+		void resetMap();
+		inline SMap& getMap() { return map; }
+	private:
+		bool isEdit;
+		// 关于地图，我们这样设计：第一个参数为横轴（x），第二个参数为纵轴（y）
+		SMap map;
+	};
+
+	Map& staticMapHandle();
 	
+
 
     class Object
     {

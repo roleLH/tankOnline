@@ -14,7 +14,7 @@ namespace tank_war
 	public:
 
 		char sendBuf[8];			// 需要发送的字节
-		char recvBuf[32];			// 需要接收的字节
+		char recvBuf[33];			// 需要接收的字节
 		std::mutex recvMutex;		// 
 
 		CMSG() : sendBuf{}, recvBuf{}
@@ -24,11 +24,12 @@ namespace tank_war
 		{
 			sendBuf[2] = sendBuf[3] = sendBuf[4] = sendBuf[5] = sendBuf[6] = sendBuf[7] = 0;
 			recvMutex.lock();
-			memset(recvBuf, 0, 32);
+			memset(recvBuf, 0, 33);
 			recvMutex.unlock();
 		}
 	};
 
+	class Controller;
 
 	// 一些线程的启动函数，因为太琐碎，所以把他们放到一块。
 	// PS：编译器实际上还是会分开。。。。
@@ -42,15 +43,7 @@ namespace tank_war
 
 		// 注意，这也是一个死循环，我们会在循环中修改指针指向的值
 		// 这是一个危险的操作，for me。
-		static void clientRecv(net::Client* c, CMSG* buf, int len, volatile bool* isFinished)
-		{
-			while (!*isFinished)
-			{
-				//			buf->recvMutex.lock();
-				c->recvMsg(buf->recvBuf, 32);
-				//			buf->recvMutex.unlock();
-			}
-		}
+		static void clientRecv(net::Client* c, CMSG* buf, volatile bool* isFinished, Controller* controller);
 	};
 
 
@@ -62,6 +55,8 @@ namespace tank_war
 		Controller(const char* ip = IP);
 		~Controller();
 		inline char* getSendBuf() const { return (char*)(msg.sendBuf); }
+		inline char* getRecvBuf() const { return (char*)(msg.recvBuf); }
+		inline void resetMsg() { msg.reset(); }
 
 		/* \note 非常神奇的操作。 尝试了一些方法。
 		 * 因为发送数据包需要playerid 信息,我们不得不把它记录下来
@@ -72,21 +67,29 @@ namespace tank_war
 		inline void setPlayerId(const char playerId) { msg.sendBuf[1] = playerId; }
 		inline void setUserId(const char userId) { msg.sendBuf[0] = userId; }
 
+		inline void sendMsg() { client->sendMsg(msg.sendBuf, 8); }
+
+		inline bool isStart() const { return isGameStart.load(); }
+		inline void setStart() { isGameStart = true; }
+		// 服务器控制
 		void createServer();
-		void clientLink();
-		// 游戏开始时建立整个消息（数据包）循环
+		// 服务器控制 游戏开始时建立整个消息（数据包）循环
 		void gameLoop();
-		inline void finish() { isFinished = true; }
+
+		// 客户端控制
+		void clientLink();
+		inline void finish() { isFinished = true; server->finish(); }
 
 	private:
 		net::Server* server;
 		net::Client* client;
 		bool isCreateServer;	// 是否创建服务器的标记
 		bool isClientLink;		// 客户端是否尝试连接服务器。warning 这里没有失败检查
-		bool isGameStart;		// 游戏是否开始的标记
+		std::atomic_bool isGameStart;		// 游戏是否开始的标记
 		std::thread threads[8]; // 线程统一管理
 		CMSG msg;
 		volatile bool isFinished;	// 标识游戏是否结束的标记
+		 
 	};
 
 

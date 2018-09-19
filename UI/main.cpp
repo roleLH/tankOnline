@@ -4,7 +4,7 @@
 #include "UI.h"
 #include "System.h"
 #include "CmdWindow.h"
-
+#include "Object.h"
 #include "Controller.h"
 
 #include <thread>
@@ -12,6 +12,8 @@
 using namespace::UI;
 using namespace::tank_war;
 using namespace::net;
+
+
 
 
 int main(int argc, char** argv)
@@ -22,9 +24,9 @@ int main(int argc, char** argv)
 
 	SDL_Init(SDL_INIT_EVENTS);
 
-	
 	SDL_Event e;
 
+	char* buf = staticControllerHandle().getSendBuf();
 
 	auto oldTime = steady_clock::now();
 
@@ -38,26 +40,26 @@ int main(int argc, char** argv)
 				switch (e.key.keysym.sym)
 				{
 				case SDLK_w:
-					
+					buf[2] = 1;
 					break;
 				case SDLK_a:
-					
+					buf[4] = 1;
 					break;
 				case SDLK_s:
-					
+					buf[3] = 1;
 					break;
 				case SDLK_d:
-					
+					buf[5] = 1;
 					break;
 
 				case SDLK_4:
-					
+					staticControllerHandle().createServer();
 					break;
 				case SDLK_5:
-					
+					staticControllerHandle().clientLink();
 					break;
 				case SDLK_6:
-					
+					staticControllerHandle().gameLoop();
 					break;
 				default:
 					break;
@@ -65,6 +67,7 @@ int main(int argc, char** argv)
 			}
 			else if (e.type == SDL_QUIT)
 			{
+				staticControllerHandle().finish();
 				break;
 			}
 				
@@ -76,16 +79,28 @@ int main(int argc, char** argv)
 			if (duration_cast<milliseconds>(d).count() >= 30)
 			{
 				oldTime = newTime;
-				
 
-				for (int i = 0; i < MAP_HEIGHT; ++i)
+				if (staticControllerHandle().isStart())
 				{
-					for (int j = 0; j < MAP_WIDTH; ++j)
+					staticControllerHandle().sendMsg();
+					char* recvBuf = staticControllerHandle().getRecvBuf();
+					staticSysyemHandle().control(recvBuf);
+					staticSysyemHandle().update();
+					staticControllerHandle().resetMsg();
+
+				}
+
+				SMap& map = staticMapHandle().getMap();
+				CmdWindow& cmdLine = staticWindowHandle();
+
+				for (int i = 0; i < MAP_WIDTH; ++i)
+				{
+					for (int j = 0; j < MAP_HEIGHT; ++j)
 					{
-						 staticWindowHandle().drawChar(i, j, map[j][i]);
+						cmdLine.drawChar(i, MAP_HEIGHT - j -1, map.map[i][j]);
 					}
 				}
-				
+
 			}
 		}
 		staticWindowHandle().update();

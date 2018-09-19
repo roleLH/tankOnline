@@ -2,11 +2,21 @@
 
 namespace tank_war
 {
-	void resetMap()
+	Map& staticMapHandle()
+	{
+		static Map staticMap;
+		return staticMap;
+	}
+
+	Map::Map()
+		: isEdit(false), map{ {0x12334,} }
+	{	}
+
+	void Map::resetMap()
 	{
 		for (size_t i = 0; i < MAP_WIDTH; ++i)
 			for (size_t j = 0; j < MAP_HEIGHT; ++j)
-				map[i][j] = 0;
+				map.map[i][j] = 0;
 	}
 }
 
@@ -82,12 +92,13 @@ namespace tank_war
 		int x = this->posX, y = this->posY;
 		oldX = x;
 		oldY = y;
+		SMap& map = staticMapHandle().getMap();
 		if (y + 2 > MAP_HEIGHT - 1)  return;
 		if (this->dir == DIR_UP)
 		{
-			if (map[x - 1][y + 2] == 0 &&
-				map[x][y + 2] == 0 &&
-				map[x + 1][y + 2] == 0)
+			if (map.map[x - 1][y + 2] == 0 &&
+				map.map[x][y + 2] == 0 &&
+				map.map[x + 1][y + 2] == 0)
 			{
 				this->posY += this->speed;
 			}
@@ -104,11 +115,12 @@ namespace tank_war
 		oldX = x;
 		oldY = y;
 		if (y - 2 < 0) return;
+		SMap& map = staticMapHandle().getMap();
 		if (this->dir == DIR_DOWN)
 		{
-			if (map[x - 1][y - 2] == 0 &&
-				map[x][y - 2] == 0 &&
-				map[x + 1][y - 2] == 0)
+			if (map.map[x - 1][y - 2] == 0 &&
+				map.map[x][y - 2] == 0 &&
+				map.map[x + 1][y - 2] == 0)
 			{
 				this->posY -= this->speed;
 			}
@@ -125,11 +137,12 @@ namespace tank_war
 		oldX = x;
 		oldY = y;
 		if (x - 2 < 0) return;
+		SMap& map = staticMapHandle().getMap();
 		if (this->dir == DIR_LEFT)
 		{
-			if (map[x - 2][y + 1] == 0 &&
-				map[x - 2][y] == 0 &&
-				map[x - 2][y - 1] == 0)
+			if (map.map[x - 2][y + 1] == 0 &&
+				map.map[x - 2][y] == 0 &&
+				map.map[x - 2][y - 1] == 0)
 			{
 				this->posX -= this->speed;
 			}
@@ -146,11 +159,12 @@ namespace tank_war
 		oldX = x;
 		oldY = y;
 		if (x + 2 > MAP_WIDTH - 1) return;
+		SMap& map = staticMapHandle().getMap();
 		if (this->dir == DIR_RIGHT)
 		{
-			if (map[x + 2][y + 1] == 0 &&
-				map[x + 2][y] == 0 &&
-				map[x + 2][y - 1] == 0)
+			if (map.map[x + 2][y + 1] == 0 &&
+				map.map[x + 2][y] == 0 &&
+				map.map[x + 2][y - 1] == 0)
 			{
 				this->posX += this->speed;
 			}
@@ -170,10 +184,11 @@ namespace tank_war
 	{
 		int x = this->oldX;
 		int y = this->oldY;
+		SMap& map = staticMapHandle().getMap();
 
-		map[x - 1][y + 1] = map[x][y + 1] = map[x + 1][y + 1] =
-			map[x - 1][y] = map[x][y] = map[x + 1][y] =
-			map[x - 1][y - 1] = map[x][y - 1] = map[x + 1][y - 1] = 0;
+		map.map[x - 1][y + 1] = map.map[x][y + 1] = map.map[x + 1][y + 1] =
+			map.map[x - 1][y] = map.map[x][y] = map.map[x + 1][y] =
+			map.map[x - 1][y - 1] = map.map[x][y - 1] = map.map[x + 1][y - 1] = 0;
 
 	}
 
@@ -182,16 +197,17 @@ namespace tank_war
 		int x = this->posX;
 		int y = this->posY;
 		int dir = static_cast<int>(this->dir);
+		SMap& map = staticMapHandle().getMap();
 
-		map[x - 1][y + 1] = tankBmp[dir][0];
-		map[x][y + 1] = tankBmp[dir][1];
-		map[x + 1][y + 1] = tankBmp[dir][2];
-		map[x - 1][y] = tankBmp[dir][3];
-		map[x][y] = tankBmp[dir][4];
-		map[x + 1][y] = tankBmp[dir][5];
-		map[x - 1][y - 1] = tankBmp[dir][6];
-		map[x][y - 1] = tankBmp[dir][7];
-		map[x + 1][y - 1] = tankBmp[dir][8];
+		map.map[x - 1][y + 1] = tankBmp[dir][0];
+		map.map[x][y + 1] = tankBmp[dir][1];
+		map.map[x + 1][y + 1] = tankBmp[dir][2];
+		map.map[x - 1][y] = tankBmp[dir][3];
+		map.map[x][y] = tankBmp[dir][4];
+		map.map[x + 1][y] = tankBmp[dir][5];
+		map.map[x - 1][y - 1] = tankBmp[dir][6];
+		map.map[x][y - 1] = tankBmp[dir][7];
+		map.map[x + 1][y - 1] = tankBmp[dir][8];
 
 	}
 
@@ -228,7 +244,8 @@ namespace tank_war
 	{
 		int x = this->posX;
 		int y = this->posY;
-		map[x][y] = 0;
+		SMap& map = staticMapHandle().getMap();
+		map.map[x][y] = 0;
 		switch (this->dir)
 		{
 		case EDir::DIR_UP:
@@ -258,7 +275,7 @@ namespace tank_war
 		}
 		this->posX = x;
 		this->posY = y;
-		map[x][y] = Bullet::bulletMap;
+		map.map[x][y] = Bullet::bulletMap;
 	}
 
 }

@@ -10,14 +10,13 @@
 #include <unordered_map>
 #include <atomic>
 #include <chrono>
-#include "static.h"
 #include "util.h"
 
 
 #define PORT 6166
 #define SERVER_PORT (PORT + 1)
 #define CLIENT_PORT (PORT + 2)
-#define IP "10.251.224.3"
+#define IP "192.168.2.115"
 #define INTERVAL_OF_FRAME 30
 
 
@@ -56,8 +55,8 @@ namespace net
         void pack();
         void resetState();
         void mainLoop();
-        void sendMsgToOther(const char* buf, int len, SOCKET sock);
-        inline void start() { isFinished = true; }
+        void sendMsgToOther(const char id, SOCKET sock);
+        inline void finish() { isFinished = true; }
 		inline sockaddr_in& DEBUG_getServer() { return name; }
     private:
 		
@@ -66,6 +65,7 @@ namespace net
         sockaddr_in name;
         std::atomic_bool isFinished;
 		List<UserBuf> userList;
+		int numofUser;
     };
 
   
@@ -110,3 +110,19 @@ namespace net
     };
 
 }
+/*
+ Link 数据包 重设计。 time 18-09-19 
+ 之前只是简单地发送userId 发现还有很多逻辑需要处理。出现的问题就是不同步。
+ 现，重新设计数据包。
+ 第一个字节表示后面有多少个ueserId
+ 第一个字节为 0 第二个字节 表示为该用户初次连接时该用户的id
+ 第一个字节为 1 第二个字节 表示为其他用户需要同步到该客户端的id
+ 第一个字节为 2+ 第二个字节 表示为该用户初次连接时该用户的id
+				 剩下的字节 表示为其他用户需要同步到该客户端的id
+ 原因如下：
+ 当一个客户端初次在系统注册时，返回其id 同时返回当前其他已注册客户的id（服务器向该客户端）
+		同时服务器需要向其他客户端同步该客户端的id
+ 只有第一个用户注册时，数据包第一个字节为0，这也是为了区别第二条规则。
+
+ 以上
+*/
