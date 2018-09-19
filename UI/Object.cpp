@@ -9,7 +9,7 @@ namespace tank_war
 	}
 
 	Map::Map()
-		: isEdit(false), map{ {0x12334,} }
+		: isEdit(false), map{}
 	{	}
 
 	void Map::resetMap()

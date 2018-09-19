@@ -89,6 +89,13 @@ namespace tank_war
 
     public:
         virtual void update();
+
+		// 添加此项的原因是，我们不能用playerid初始化位置坐标。
+		inline void setPos(const int x, const int y)
+		{
+			posX = x; posY = y;
+			oldX = x; oldY = y;
+		}
         void up();
         void down();
         void left();

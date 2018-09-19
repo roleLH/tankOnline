@@ -218,10 +218,7 @@ namespace net
 
 	int Client::recvMsg(char* buf, int len)
 	{
-		int n = recvfrom(sockOfTrans, buf, len, 0, NULL, NULL);
-		
-		std::cout << n << " B client recvMsg : " << WSAGetLastError() << std::endl;
-		return n;
+		return recvfrom(sockOfTrans, buf, len, 0, NULL, NULL);
 	}
 
 	// 与服务端建立连接，如果连接建立，那么用服务端返回的id创建游戏player。
@@ -237,7 +234,6 @@ namespace net
 		while (cnt--)
 		{
 			int n = recvfrom(sockOfLink, buff, 5, 0, NULL, NULL);
-			std::cout << "clientLink : i can recv : " << n << std::endl;
 			if (n < 0)	// 如果出现任何接收错误，那么退出循环
 				break;
 			// 逻辑问题。等待修改 

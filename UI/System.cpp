@@ -10,6 +10,10 @@ namespace tank_war
 		{
 			playerList[id].userId = userId;
 			playerList[id].tankId = objManager.newTank();
+			// 我们在这里添加初始化tank位置的代码
+			Tank& tank = objManager.getTank(playerList[id].tankId);
+			tank.setPos(userId * 3 + 2, 1);
+			//
 			playerList[id].joypadId = joypadManager.newJoypad();
 			playerList[id].isLive = true;
 
