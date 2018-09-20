@@ -24,6 +24,14 @@ namespace tank_war
 		// 返回该对象的id 创建失败返回-1
 		int addPlayer(int userId);	// 关于userId参数，目的是为了对应哪一个用户（网络连接时使用）
 
+		inline int getPlayerId(int userId)
+		{
+			auto iter = userMap.find(userId);
+			if (iter == userMap.end())
+				return -1;
+			return iter->second;
+		}
+
 		inline Tank& getTank(int playerId)
 		{
 			return objManager.getTank(playerList[playerId].tankId);
@@ -33,6 +41,8 @@ namespace tank_war
 			return joypadManager.getJoypad(playerList[playerId].joypadId);
 		}
 
+		inline int getScore(int playerId) { return playerList[playerId].score; }
+		inline bool live(int playerId) { return playerList[playerId].isLive; }
 	private:
 
 		// 我们需要提供一个用户id到playerid的映射

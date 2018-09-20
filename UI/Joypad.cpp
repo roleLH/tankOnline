@@ -1,5 +1,6 @@
 #include "Joypad.h"
 
+#define NUM(key) ((key) + '0')
 
 namespace tank_war
 {
@@ -13,12 +14,12 @@ namespace tank_war
 	std::string Joypad::toStr()
 	{
 		std::string tmp = "000000";
-		tmp[KEY_UP] = buttonMap[KEY_UP];
-		tmp[KEY_DOWN] = buttonMap[KEY_DOWN];
-		tmp[KEY_LEFT] = buttonMap[KEY_LEFT];
-		tmp[KEY_RIGHT] = buttonMap[KEY_RIGHT];
-		tmp[KEY_OK] = buttonMap[KEY_OK];
-		tmp[KEY_CANCEL] = buttonMap[KEY_CANCEL];
+		tmp[KEY_UP] = NUM(buttonMap[KEY_UP]);
+		tmp[KEY_DOWN] = NUM(buttonMap[KEY_DOWN]);
+		tmp[KEY_LEFT] = NUM(buttonMap[KEY_LEFT]);
+		tmp[KEY_RIGHT] = NUM(buttonMap[KEY_RIGHT]);
+		tmp[KEY_OK] = NUM(buttonMap[KEY_OK]);
+		tmp[KEY_CANCEL] = NUM(buttonMap[KEY_CANCEL]);
 		return tmp;
 	}
 

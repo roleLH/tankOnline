@@ -70,12 +70,19 @@ namespace UI
 		setInfo(169, buf);
 	}
 
+	void TankInfo::setScore(int s)
+	{
+		std::string buf = "";
+		i2cs(s, buf);
+		setInfo(209, buf);
+	}
+
 	void TankInfo::setJoyPad(const char* state)
 	{
 		std::string buf = "";
 		for (int i = 6; i >= 0; --i)
 			buf += state[i];
-		setInfo(369, buf);
+		setInfo(370, buf);
 	}
 
 

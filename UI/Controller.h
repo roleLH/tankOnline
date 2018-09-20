@@ -7,7 +7,19 @@ using namespace::net;
 
 namespace tank_war
 {
-	
+
+#define SDLK_w 119
+#define SDLK_s 115
+#define SDLK_a 97
+#define SDLK_d 100
+#define SDLK_j 106
+#define SDLK_k 107
+
+#define SDLK_4 52
+#define SDLK_5 53
+#define SDLK_6 54
+
+
 	// so 我们需要发送和接收的信息全部存储在这里面
 	class CMSG
 	{
@@ -66,6 +78,10 @@ namespace tank_war
 		*/
 		inline void setPlayerId(const char playerId) { msg.sendBuf[1] = playerId; }
 		inline void setUserId(const char userId) { msg.sendBuf[0] = userId; }
+		// 获取本用户的playerId
+		inline const int getPlayerId() const { return msg.sendBuf[1]; }
+		// 获取本用户的userId
+		inline const int getUserId() const { return msg.sendBuf[0]; }
 
 		inline void sendMsg() { client->sendMsg(msg.sendBuf, 8); }
 
@@ -79,6 +95,27 @@ namespace tank_war
 		// 客户端控制
 		void clientLink();
 		inline void finish() { isFinished = true; server->finish(); }
+
+		// 我们把来自键盘输入的判断放在这里
+		inline void keySwitch(int keyCode)
+		{
+			char* buf = msg.sendBuf;
+			switch (keyCode)
+			{
+			case SDLK_w: buf[2] = 1; break;
+			case SDLK_a: buf[4] = 1; break;
+			case SDLK_s: buf[3] = 1; break;
+			case SDLK_d: buf[5] = 1; break;
+
+			case SDLK_j: buf[6] = 1; break;
+			case SDLK_k: buf[7] = 1; break;
+
+			case SDLK_4: createServer(); break;
+			case SDLK_5: clientLink(); break;
+			case SDLK_6: gameLoop(); break;
+			default: break;
+			}
+		}
 
 	private:
 		net::Server* server;

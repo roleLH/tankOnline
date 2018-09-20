@@ -40,6 +40,7 @@ namespace tank_war
 		}
 	}
 
+
 	void System::update()
 	{
 		for (size_t i = 0; i < playerList.size(); ++i)
@@ -48,20 +49,36 @@ namespace tank_war
 			{
 				Joypad& joypad = joypadManager.getJoypad(playerList[i].joypadId);
 				Tank& tank = objManager.getTank(playerList[i].tankId);
-				if (joypad.isPress(KEY_UP))
-					tank.up();
-				else if (joypad.isPress(KEY_DOWN))
-					tank.down();
-				else if (joypad.isPress(KEY_LEFT))
-					tank.left();
-				else if (joypad.isPress(KEY_RIGHT))
-					tank.right();
-				if (joypad.isPress(KEY_OK))	// 这里存在多次复制，可能会有影响
+				int bulletId = objManager.easyCollision(playerList[i].tankId);
+				if (bulletId != -1)
 				{
-					Bullet bullet = tank.fire();
-					int bid = objManager.newBullet();
-					Bullet& tb = objManager.getBullet(bid);
-					tb = bullet;
+					Bullet& bullet = objManager.getBullet(bulletId);
+					playerList[bullet.getPlayerId()].score++;
+					objManager.freeTank(playerList[i].tankId);
+					objManager.freeBullet(bulletId);
+					playerList[i].isLive = false;
+				}
+				else
+				{
+					if (joypad.isPress(KEY_UP))
+						tank.up();
+					else if (joypad.isPress(KEY_DOWN))
+						tank.down();
+					else if (joypad.isPress(KEY_LEFT))
+						tank.left();
+					else if (joypad.isPress(KEY_RIGHT))
+						tank.right();
+					if (joypad.isPress(KEY_OK))	// 这里存在多次复制，可能会有影响
+					{
+						if (tank.fire())
+						{
+							int bid = objManager.newBullet();
+							Bullet& tb = objManager.getBullet(bid);
+							tb.set(tank.getX(), tank.getY(), tank.getDirCode(), i);
+							tb.setTankId(playerList[i].tankId);
+						}
+
+					}
 				}
 
 				joypad.reset();

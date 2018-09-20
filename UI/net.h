@@ -16,7 +16,7 @@
 #define PORT 6166
 #define SERVER_PORT (PORT + 1)
 #define CLIENT_PORT (PORT + 2)
-#define IP "192.168.2.115"
+#define IP "192.168.43.124"
 #define INTERVAL_OF_FRAME 30
 
 

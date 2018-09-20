@@ -21,15 +21,11 @@ int main(int argc, char** argv)
 	
 	WSAData data;
 	WSAStartup(MAKEWORD(2, 2), &data);
-
 	SDL_Init(SDL_INIT_EVENTS);
-
 	SDL_Event e;
-
-	char* buf = staticControllerHandle().getSendBuf();
-
+	TankInfo info;
+	
 	auto oldTime = steady_clock::now();
-
 	while (1)
 	{
 		if (SDL_PollEvent(&e))
@@ -37,40 +33,13 @@ int main(int argc, char** argv)
 
 			if (e.type == SDL_KEYDOWN)
 			{
-				switch (e.key.keysym.sym)
-				{
-				case SDLK_w:
-					buf[2] = 1;
-					break;
-				case SDLK_a:
-					buf[4] = 1;
-					break;
-				case SDLK_s:
-					buf[3] = 1;
-					break;
-				case SDLK_d:
-					buf[5] = 1;
-					break;
-
-				case SDLK_4:
-					staticControllerHandle().createServer();
-					break;
-				case SDLK_5:
-					staticControllerHandle().clientLink();
-					break;
-				case SDLK_6:
-					staticControllerHandle().gameLoop();
-					break;
-				default:
-					break;
-				}
+				staticControllerHandle().keySwitch(e.key.keysym.sym);
 			}
 			else if (e.type == SDL_QUIT)
 			{
 				staticControllerHandle().finish();
 				break;
 			}
-				
 		}
 		else
 		{
@@ -85,9 +54,32 @@ int main(int argc, char** argv)
 					staticControllerHandle().sendMsg();
 					char* recvBuf = staticControllerHandle().getRecvBuf();
 					staticSysyemHandle().control(recvBuf);
-					staticSysyemHandle().update();
+
 					staticControllerHandle().resetMsg();
 
+					int playerId = staticControllerHandle().getPlayerId();
+					int userId = staticControllerHandle().getUserId();
+					info.setId(userId);
+					info.setScore(staticSysyemHandle().getScore(playerId));
+					info.setIsLive(staticSysyemHandle().live(playerId));
+
+					Tank& tank = staticSysyemHandle().getTank(playerId);
+					info.setPosition(tank.getX(), tank.getY());
+					info.setDirection(tank.getDir());
+					Joypad& joypad = staticSysyemHandle().getJoypad(playerId);
+					info.setJoyPad(joypad.toStr().c_str());
+
+					staticSysyemHandle().update();
+					char* bmp = info.getInfoMap();
+
+					CmdWindow& cmdLine = staticWindowHandle();
+					for (size_t i = 0; i < 20; ++i)
+					{
+						for (size_t j = 0; j < 20; ++j)
+						{
+							cmdLine.drawChar(i + 21, j, bmp[i + j * 20]);
+						}
+					}
 				}
 
 				SMap& map = staticMapHandle().getMap();

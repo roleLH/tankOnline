@@ -64,6 +64,33 @@ namespace tank_war
 		}
 	}
 
+	// 一个非常简单的碰撞检测函数
+	inline bool _easyCollision(Tank& tank, Bullet& bullet)
+	{
+		int tx = tank.getX(), ty = tank.getY();
+		int bx = bullet.getX(), by = bullet.getY();
+		//  点在矩形内
+		return ((bx >= tx - 1 && bx <= tx + 1) && (by >= ty - 1 && by <= ty + 1));
+
+	}
+
+	int ObjectManager::easyCollision(int tankId)
+	{
+		Tank& t = tanks[tankId];
+		int res = -1;
+		for (size_t i{}; i < bullets.size(); ++i)
+		{
+			if (bullets[i].getIsLive() && bullets[i].getTankId() != tankId)
+			{
+				if (_easyCollision(t, bullets[i]))
+				{
+					res = i;
+					break;
+				}
+			}
+		}
+		return res;
+	}
 }
 
 namespace tank_war
@@ -71,8 +98,9 @@ namespace tank_war
 	Object::Object(int x, int y, int s, EDir d, bool l)
 		: posX(x), posY(y), speed(s), dir(d), isLive(l) { }
 
+	// 这个默认构造函数好像有问题。
 	Tank::Tank() : Object(Tank::seed, 1, 1, EDir::DIR_UP, false),
-		oldX(Tank::seed), oldY(1)
+		oldX(Tank::seed), oldY(1), bulletCnt(1)
 	{
 		seed += 2;
 	}
@@ -220,24 +248,31 @@ namespace tank_war
 
 	// 注意！！ 这个函数很烂，目的仅仅是为了不把system做成全局变量
 	// 很烂的原因：我不喜欢这种复制。
-	Bullet Tank::fire()
+	// 后记。但还是做成了全局变量。。。。
+	bool Tank::fire()
 	{
-		return Bullet(this->posX, this->posY, this->dir);
+		if (bulletCnt > 0)
+		{
+			bulletCnt--;
+			return true;
+		}
+		return false;
 	}
 
 	Bullet::Bullet()
-		: Object(0, 0, 1, DIR_UP, false)
+		: Object(0, 0, 1, DIR_UP, false), playerId(-1)
 	{	}
 
 	Bullet::Bullet(int x, int y, EDir d)
-		: Object(x, y, 2, d, true)
+		: Object(x, y, 2, d, true), playerId(-1)
 	{	}
 
-	void Bullet::set(int x, int y, EDir d)
+	void Bullet::set(int x, int y, EDir d, int t)
 	{
 		this->posX = x;
 		this->posY = y;
 		this->dir = d;
+		this->playerId = t;
 	}
 
 	void Bullet::update()

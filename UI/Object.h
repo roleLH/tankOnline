@@ -62,6 +62,7 @@ namespace tank_war
 				case EDir::DIR_RIGHT: return 0x10;
 			}
 		}
+		inline EDir getDirCode() const { return dir; }
 		inline bool getIsLive() const { return isLive; }
      protected:
         int posX, posY;
@@ -77,8 +78,17 @@ namespace tank_war
 
 		Bullet();
 		Bullet(int x, int y, EDir d);
-		void set(int x, int y, EDir d);
+		void set(int x, int y, EDir d, int playerId);
+
+		inline void setplayerId(int t) { playerId = t; }
+		inline int getPlayerId() const { return playerId; }
+		inline void setTankId(int t) { tankId = t; }
+		inline int getTankId() const { return tankId; }
+
 	private:
+		int playerId;	// 记录是哪一个`player`发出的
+		int tankId;		// 同上。
+		int groupId;	// 未使用
 		static int bulletMap;
 	};
 
@@ -96,12 +106,14 @@ namespace tank_war
 			posX = x; posY = y;
 			oldX = x; oldY = y;
 		}
+		inline void IncBulletCnt() { bulletCnt++; }
+
         void up();
         void down();
         void left();
         void right();
         void idle();
-		Bullet fire();
+		bool fire();	// 返回是否可以发射子弹
 
         void clearOld();
         void buildNew();
@@ -110,7 +122,7 @@ namespace tank_war
         static int tankBmp[4][9];
 		static int seed;
         int oldX, oldY;
-        
+		int bulletCnt;		// 一次最多发射子弹的个数
     };
 
 
@@ -128,6 +140,9 @@ namespace tank_war
 		Bullet& getBullet(const int id) { return bullets.getObject(id); }
 		void freeBullet(int id);
 
+		// 检测当前tank是否与某个子弹发生碰撞
+		// 如果发生碰撞，返回该子弹id，否则返回-1
+		int easyCollision(int tankId);
 	private:
 		List<Tank> tanks;
 		List<Bullet> bullets;
