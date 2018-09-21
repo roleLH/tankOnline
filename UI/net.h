@@ -89,7 +89,7 @@ namespace net
     public:
  //       NetManager();
 
-        void createServer(std::string& name);
+        void broadCastServer();
         bool tryGetServer();
 
 		inline sockaddr_in* getServerAddr() 

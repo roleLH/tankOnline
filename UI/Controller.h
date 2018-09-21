@@ -56,6 +56,12 @@ namespace tank_war
 		// 注意，这也是一个死循环，我们会在循环中修改指针指向的值
 		// 这是一个危险的操作，for me。
 		static void clientRecv(net::Client* c, CMSG* buf, volatile bool* isFinished, Controller* controller);
+
+		// 客户端等待服务器的广播
+		static inline void tryGetServer(NetManager* m)
+		{
+			m->tryGetServer();
+		}
 	};
 
 
@@ -126,6 +132,8 @@ namespace tank_war
 		std::thread threads[8]; // 线程统一管理
 		CMSG msg;
 		volatile bool isFinished;	// 标识游戏是否结束的标记
+
+		NetManager manager;		// 与服务器广播，通知该局域网下的其他用户有关
 		 
 	};
 

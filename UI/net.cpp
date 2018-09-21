@@ -263,16 +263,22 @@ namespace net
 
 
 
-
-	void NetManager::createServer(std::string& name)
+	// 此函数的作用：向局域网内的其他机器广播该机器的ip地址，
+	// 以说明该机器已经创建服务器并且等待连接。
+	// PS: 广播只有一次。
+	void NetManager::broadCastServer()
 	{
 
 		std::string buf = "i had create the server.\n";
 		SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
 		sockaddr_in addr;
 		addr.sin_family = AF_INET;
-		addr.sin_port = htons(PORT);
-		addr.sin_addr.s_addr = inet_addr(IP);
+		addr.sin_port = htons(8887);
+		addr.sin_addr.s_addr = inet_addr("255.255.255.255");
+
+		bool flag = true;
+		setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (char*)&flag, sizeof(flag));
+
 		int n = sendto(sock, buf.c_str(), buf.size(), 0, (sockaddr*)&addr, sizeof(addr));
 		closesocket(sock);
 		if (n < 0)
@@ -281,7 +287,7 @@ namespace net
 
 
 	/**
-	* 这个函数的作用：定时25s 然后等待数据报的到来，最后写入 发送方的详细信息
+	* 这个函数的作用：定时255s 然后等待数据报的到来，最后写入 发送方的详细信息
 	*/
 	bool NetManager::tryGetServer()
 	{
@@ -289,14 +295,14 @@ namespace net
 		sockaddr_in name;
 		memset(&name, 0, sizeof(name));
 		name.sin_family = AF_INET;
-		name.sin_port = htons(PORT);
+		name.sin_port = htons(8887);
 		name.sin_addr.s_addr = htonl(INADDR_ANY);
 		bind(sock, (sockaddr*)&name, sizeof(name));
 		char buf[255];
 
 		fd_set rset;
 		timeval timeout;
-		timeout.tv_sec = 25;
+		timeout.tv_sec = 255;
 		timeout.tv_usec = 0;
 		FD_ZERO(&rset);
 		FD_SET(sock, &rset);
@@ -309,8 +315,9 @@ namespace net
 		else if (n > 0)
 		{
 			memset(&server, 0, sizeof(sockaddr_in));
+			int size = sizeof(server);
 			mutexOfServer.lock();
-			recvfrom(sock, buf, 255, 0, (sockaddr*)&server, NULL);
+			recvfrom(sock, buf, 255, 0, (sockaddr*)&server, &size);
 			mutexOfServer.unlock();
 			return true;
 		}
@@ -318,14 +325,9 @@ namespace net
 		{
 			abort();
 		}
+		std::cout << "i get the server addr !!!\n";
 		return closesocket(sock);
 	}
-
-	static inline void tryGetServer(NetManager* m)
-	{
-		m->tryGetServer();
-	}
-
 
 
 }

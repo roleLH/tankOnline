@@ -26,8 +26,11 @@ namespace tank_war
 			isCreateServer = true;
 			server = new net::Server();
 			std::thread t{ StartUpOfThread::serverLink, server };
+			
 			threads[0].swap(t);
 		}
+		// ¹ã²¥¸ÃµØÖ·
+		manager.broadCastServer();
 	}
 
 	void Controller::clientLink()
@@ -35,6 +38,13 @@ namespace tank_war
 		if (!isClientLink)
 		{
 			isClientLink = true;
+
+			sockaddr_in addr;
+			addr.sin_family = AF_INET;
+			addr.sin_port = htons(PORT);
+			addr.sin_addr = manager.getServerAddr()->sin_addr;
+			client = new Client(addr);
+
 			std::thread t{ StartUpOfThread::clientLink, client };
 
 			uint8_t flag = 255;
@@ -72,17 +82,16 @@ namespace tank_war
 
 	Controller::Controller(const char* ip)
 	{
-		sockaddr_in addr;
-		addr.sin_family = AF_INET;
-		addr.sin_port = htons(PORT);
-		addr.sin_addr.s_addr = inet_addr(ip);
-		client = new net::Client(addr);
+		
+		client = NULL;
 		server = NULL;
 		isCreateServer = false;
 		isClientLink = false;
 		isGameStart = false;
 		isFinished = false;
 
+		std::thread tp{ StartUpOfThread::tryGetServer, &manager };
+		threads[7].swap(tp);
 	}
 
 	Controller::~Controller()
